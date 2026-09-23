@@ -38,8 +38,22 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const PAGE_PATHS: Record<PageId, string> = {
+  'command-center': '/',
+  'skill-intelligence': '/skill-intelligence',
+  'execution-lab': '/execution-lab',
+  'growth-proof': '/growth-proof',
+  admin: '/admin',
+  'data-chamber': '/data-chamber',
+};
+
+function pageFromPathname(pathname: string): PageId {
+  const entry = Object.entries(PAGE_PATHS).find(([, path]) => path === pathname);
+  return (entry?.[0] as PageId | undefined) ?? 'command-center';
+}
+
 export function AppContextProvider({ children }: { children: React.ReactNode }) {
-  const [currentPage, setCurrentPage] = useState<PageId>('command-center');
+  const [currentPage, setCurrentPageState] = useState<PageId>(() => pageFromPathname(window.location.pathname));
   const [userRole, setUserRole] = useState<UserRole>('ROLE_LEARNER');
   const [soundEnabled, setSoundEnabled] = useState(true);
   
@@ -75,6 +89,20 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
   };
 
   const isAdmin = userRole === 'ROLE_ADMIN';
+
+  const setCurrentPage = (page: PageId) => {
+    setCurrentPageState(page);
+    const nextPath = PAGE_PATHS[page];
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({ page }, '', nextPath);
+    }
+  };
+
+  React.useEffect(() => {
+    const handlePopState = () => setCurrentPageState(pageFromPathname(window.location.pathname));
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   return (
     <AppContext.Provider
