@@ -17,9 +17,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        # REPLACE WITH YOUR ACTUAL RENDER BACKEND URL AFTER BACKEND DEPLOYMENT:
-        # Example: https://karmatute-backend.onrender.com
-        value: http://localhost:8080
+        value: https://karmatute-ai-personalized-competency.onrender.com
 
   # ---------------------------------------------------------------------------
   # 2. BACKEND ENGINE SERVICE (Spring Boot Web Service)
@@ -53,6 +51,4 @@ services:
 
       # CORS ORIGIN RESTRICTION:
       - key: FRONTEND_ORIGIN
-        # REPLACE WITH YOUR ACTUAL RENDER FRONTEND DOMAIN:
-        # Example: https://karmavaani-frontend.onrender.com
-        value: "*"
+        value: https://karmatute.vercel.app,https://karmavaani-frontend.onrender.com
