@@ -26,13 +26,12 @@ services:
   # ---------------------------------------------------------------------------
   - type: web
     name: karmatute-backend
-    env: java
+    env: docker
     rootDir: backend
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/KarmaTute-0.0.1-SNAPSHOT.jar
+    dockerfilePath: Dockerfile
     envVars:
       - key: PORT
-        value: 8080
+        value: "8080"
       
       # SUPABASE POSTGRESQL CONFIGURATION (Configure in Render Dashboard / Secrets):
       - key: DATABASE_DRIVER
@@ -45,7 +44,7 @@ services:
         sync: false # Set manually in Render Dashboard
       - key: DB_POOL_MAX_SIZE
         value: "5"
-      - key: DB_POOL_MIN_IDLE"
+      - key: DB_POOL_MIN_IDLE
         value: "2"
       
       # MISTRAL AI INTEGRATION (Optional - Fallback to deterministic engine if unconfigured):
