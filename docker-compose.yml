@@ -1,6 +1,23 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: karmatute-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: karmatute
+      POSTGRES_USER: karmatute
+      POSTGRES_PASSWORD: KarmaTuteDemo_2026!
+    volumes:
+      - karmatute-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U karmatute -d karmatute"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build: ./backend
     container_name: karmatute-backend
@@ -8,6 +25,15 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - DATABASE_URL=jdbc:postgresql://db:5432/karmatute
+      - DATABASE_DRIVER=org.postgresql.Driver
+      - DATABASE_USERNAME=karmatute
+      - DATABASE_PASSWORD=KarmaTuteDemo_2026!
+      - SPRING_JPA_DDL_AUTO=update
+      - H2_CONSOLE_ENABLED=false
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
@@ -16,3 +42,6 @@ services:
       - "5173:80"
     depends_on:
       - backend
+
+volumes:
+  karmatute-postgres-data:
