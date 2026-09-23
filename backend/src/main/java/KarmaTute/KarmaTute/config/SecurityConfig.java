@@ -1,5 +1,6 @@
 package KarmaTute.KarmaTute.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,7 +48,11 @@ public class SecurityConfig {
         if (allowedOrigins.trim().equals("*")) {
             configuration.setAllowedOriginPatterns(List.of("*"));
         } else {
-            configuration.setAllowedOrigins(origins);
+            List<String> originPatterns = new ArrayList<>(origins);
+            originPatterns.add("https://*.vercel.app");
+            originPatterns.add("https://*.onrender.com");
+            originPatterns.add("http://localhost:*");
+            configuration.setAllowedOriginPatterns(originPatterns);
         }
         
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
