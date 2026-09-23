@@ -15,6 +15,10 @@ export function LoginPage() {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const continueToRequestedPage = () => {
+    setCurrentPage(window.location.pathname === '/execution-lab' ? 'execution-lab' : 'command-center');
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsAuthenticating(true);
@@ -22,7 +26,7 @@ export function LoginPage() {
       localStorage.setItem('demo_fresh_start', 'true');
       toast.success('Authentication successful');
       setIsAuthenticated(true);
-      setCurrentPage('command-center');
+      continueToRequestedPage();
     }, 1200);
   };
 
@@ -41,7 +45,7 @@ export function LoginPage() {
       setIsUploading(false);
       toast.success('KarmaDNA Verified. Secure Gati-Login active.');
       setIsAuthenticated(true);
-      setCurrentPage('command-center');
+      continueToRequestedPage();
     }, 1800);
   };
 
