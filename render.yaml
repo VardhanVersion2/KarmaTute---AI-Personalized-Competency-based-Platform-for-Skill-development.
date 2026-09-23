@@ -1,0 +1,59 @@
+# Render Infrastructure-as-Code (Blueprint Specification)
+# Target Deployment: Render Static Site (Frontend) + Render Web Service (Backend) + Supabase PostgreSQL
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. FRONTEND WEB SERVICE (Static Site)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: karmavaani-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        # REPLACE WITH YOUR ACTUAL RENDER BACKEND URL AFTER BACKEND DEPLOYMENT:
+        # Example: https://karmatute-backend.onrender.com
+        value: http://localhost:8080
+
+  # ---------------------------------------------------------------------------
+  # 2. BACKEND ENGINE SERVICE (Spring Boot Web Service)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: karmatute-backend
+    env: java
+    rootDir: backend
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/KarmaTute-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: PORT
+        value: 8080
+      
+      # SUPABASE POSTGRESQL CONFIGURATION (Configure in Render Dashboard / Secrets):
+      - key: DATABASE_DRIVER
+        value: org.postgresql.Driver
+      - key: DATABASE_URL
+        value: jdbc:postgresql://db.YOUR_SUPABASE_PROJECT.supabase.co:5432/postgres?sslmode=require
+      - key: DATABASE_USERNAME
+        value: postgres
+      - key: DATABASE_PASSWORD
+        sync: false # Set manually in Render Dashboard
+      - key: DB_POOL_MAX_SIZE
+        value: "5"
+      - key: DB_POOL_MIN_IDLE"
+        value: "2"
+      
+      # MISTRAL AI INTEGRATION (Optional - Fallback to deterministic engine if unconfigured):
+      - key: MISTRAL_API_KEY
+        sync: false # Set manually in Render Dashboard
+
+      # CORS ORIGIN RESTRICTION:
+      - key: FRONTEND_ORIGIN
+        # REPLACE WITH YOUR ACTUAL RENDER FRONTEND DOMAIN:
+        # Example: https://karmavaani-frontend.onrender.com
+        value: "*"

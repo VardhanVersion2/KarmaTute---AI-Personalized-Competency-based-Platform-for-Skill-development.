@@ -1,0 +1,14 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Java / Spring Boot Backend
+target/
+**/target/
+.mvn/wrapper/maven-wrapper.jar
+
